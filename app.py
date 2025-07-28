@@ -25,6 +25,28 @@ st.markdown("## 🔍 Ask a Question")
 typed_input = st.text_input("Type your query here...")
 
 user_input = None
+import streamlit as st
+import pandas as pd
+import os
+from sentence_transformers import SentenceTransformer, util
+
+# ✅ Check if file exists
+if not os.path.exists("faq_data.csv"):
+    st.error("🚫 'faq_data.csv' not found. Please upload it in the root directory.")
+    st.stop()
+
+# ✅ Read & clean the data
+faq_data = pd.read_csv("faq_data.csv")
+faq_data.dropna(subset=["Question", "Answer"], inplace=True)
+faq_data['Question'] = faq_data['Question'].astype(str)
+faq_data['Answer'] = faq_data['Answer'].astype(str)
+
+# ✅ Load model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# ✅ Create embeddings
+question_embeddings = [model.encode(q) for q in faq_data['Question']]
+
 if typed_input:
     user_input = typed_input
     st.markdown(f"**You asked:** {typed_input}")
