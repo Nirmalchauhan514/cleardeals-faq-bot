@@ -20,12 +20,14 @@ question_embeddings = [model.encode(q) for q in faq_data['Question']]
 st.title("ClearDeals FAQ Chatbot")
 
 # Show all available questions
-with st.expander("📋 View All FAQs"):
-    for i, row in faq_data.iterrows():
-        st.markdown(f"**Q{i+1}. {row['Question']}**")
 
 # Input box
-user_input = st.text_input("🔍 Ask a question:")
+with st.expander("📋 View All FAQs"):
+    selected_question = st.selectbox("Choose a question:", faq_data['Question'])
+    if st.button("Ask Selected Question"):
+        user_input = selected_question
+    else:
+        user_input = st.text_input("🔍 Or ask your own question:")
 
 if user_input:
     user_embedding = model.encode(user_input)
